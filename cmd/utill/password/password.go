@@ -9,6 +9,6 @@ func Hash(password string) (string, error) {
 }
 
 //Compare compares user password and hashed password which is stored in database
-func Compare(password, hashedPassword string) bool {
+func Compare(hashedPassword, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
 }

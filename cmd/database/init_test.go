@@ -6,8 +6,7 @@ import (
 )
 
 func TestInitDB(t *testing.T) {
+	assert.Nil(t, Init())
 
-	assert.NotNil(t, InitDB())
-
-	assert.NotNil(t, Conn.Close())
+	assert.Nil(t, Close())
 }

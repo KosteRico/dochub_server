@@ -1,12 +1,17 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/gorilla/csrf"
+	"checkaem_server/cmd/database"
+	"checkaem_server/cmd/database/user"
+	"checkaem_server/cmd/handlers/auth"
+	"checkaem_server/cmd/handlers/middleware"
+	"checkaem_server/cmd/handlers/post"
+	"checkaem_server/cmd/handlers/subscriptions"
+	"checkaem_server/cmd/handlers/util"
+	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type Book struct {
@@ -14,32 +19,58 @@ type Book struct {
 	Title string `json:"title"`
 }
 
-func SetJsonHeader(w *http.ResponseWriter) {
-	(*w).Header().Set("Content-Type", "application/json")
+func init() {
+	err := database.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Database initializer: %v (PID)", database.Connection.PID())
 }
 
 func main() {
-	apiRouter := mux.NewRouter().PathPrefix("/api").Subrouter()
+	defer database.Close()
 
-	CSRF := csrf.Protect([]byte("32-byte-long-auth-key"))
+	testHandler := http.HandlerFunc(TestFunc)
 
-	apiRouter.HandleFunc("/test/{id}", TestHandler)
+	r := mux.NewRouter()
+
+	apiRouter := r.PathPrefix("/api").Subrouter()
+
+	userRouter := apiRouter.PathPrefix("/users").Subrouter()
+	userRouter.Handle("/new", auth.CreateAccount).Methods("POST")
+	userRouter.Handle("/login", auth.Login).Methods("GET")
+
+	authenticatedUserRouter := userRouter.PathPrefix("/{username}").Subrouter()
+	authenticatedUserRouter.Use(middleware.IsAuthenticated)
+
+	authenticatedUserRouter.Handle("/refresh", auth.RefreshToken).Methods("GET")
+	authenticatedUserRouter.Handle("/test/{msg}", testHandler)
+	authenticatedUserRouter.Handle("/posts", post.GetCreatedPosts).Methods("GET", "POST")
+
+	subscriptionsRouter := authenticatedUserRouter.PathPrefix("/subscriptions").Subrouter()
+	subscriptionsRouter.Handle("/posts", subscriptions.GetSubscribedPosts).Methods("GET")
 
 	log.Println("Server started")
-	http.Handle("/", CSRF(apiRouter))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
-func TestHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	SetJsonHeader(&w)
-	id, err := strconv.Atoi(vars["id"])
+func TestFunc(w http.ResponseWriter, r *http.Request) {
+
+	username := util.GetUsername(r)
+
+	u, err := user.Get(username)
+
 	if err != nil {
+		util.RespondMessage(w, false, fmt.Sprintf("User with name %q not found", username))
 		return
 	}
-	b := Book{
-		Id:    id,
-		Title: "War and peace",
-	}
-	json.NewEncoder(w).Encode(b)
+
+	args := mux.Vars(r)
+
+	resp := util.Message(true, fmt.Sprintf("Test message: %s", args["msg"]))
+
+	resp["account"] = u
+
+	util.Respond(w, resp)
+
 }

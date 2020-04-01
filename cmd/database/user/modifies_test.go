@@ -7,17 +7,18 @@ import (
 	"testing"
 )
 
-func TestInsert(t *testing.T) {
-
-	assert.NotNil(t, database.InitDB())
+func TestInsertDelete(t *testing.T) {
+	assert.Nil(t, database.Init())
 
 	username := "test"
 
 	u, err := user.New(username, "upibaz22")
 
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 
+	assert.Nil(t, Insert(&u))
 	assert.NotNil(t, Insert(&u))
 
-	assert.NotNil(t, Delete(username))
+	assert.Nil(t, Delete(username))
+	assert.Nil(t, database.Close())
 }
