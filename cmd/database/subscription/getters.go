@@ -14,6 +14,7 @@ func GetPosts(username string) (res []*postObj.Post, err error) {
 	}
 
 	res, err = post.ScanFullPosts(rows, res)
+	res, err = post.FillTags(res)
 
 	if err != nil {
 		return

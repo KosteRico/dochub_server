@@ -28,6 +28,7 @@ func GetByCreator(username string) ([]*post.Post, error) {
 	var res []*post.Post
 
 	res, err = ScanFullPosts(rows, res)
+	res, err = FillTags(res)
 
 	if err != nil {
 		return nil, err
@@ -48,6 +49,30 @@ func GetTags(uuid string) ([]string, error) {
 	for rows.Next() {
 		var s string
 		err = rows.Scan(&s)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, s)
+	}
+
+	return res, nil
+}
+
+func GetTagNamesByPost(uuid string) ([]string, error) {
+
+	rows, err := database.Connection.Query(getNamesByPostQuery, uuid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var res []string
+
+	for rows.Next() {
+		var s string
+
+		err = rows.Scan(&s)
+
 		if err != nil {
 			return nil, err
 		}

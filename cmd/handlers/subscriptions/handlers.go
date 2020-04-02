@@ -42,3 +42,20 @@ var GetSubscribedPosts = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 
 	util.Respond(w, resp)
 })
+
+var GetSubscribedTags = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	username := util.GetUsername(r)
+
+	tags, err := subscription.GetTagNames(username)
+
+	if err != nil {
+		util.RespondUserNotFound(w, username)
+		return
+	}
+
+	resp := util.Message(true, "Tags was found")
+	resp["tags"] = tags
+
+	util.Respond(w, resp)
+
+})

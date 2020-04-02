@@ -26,3 +26,20 @@ func ScanFullPosts(rows *pgx.Rows, posts []*post.Post) ([]*post.Post, error) {
 
 	return posts, nil
 }
+
+func FillTags(posts []*post.Post) ([]*post.Post, error) {
+
+	var err error
+
+	for _, r := range posts {
+		tags, err := GetTagNamesByPost(r.Id)
+
+		if err != nil {
+			return nil, err
+		}
+
+		r.TagNames = tags
+	}
+
+	return posts, err
+}

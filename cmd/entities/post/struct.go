@@ -18,10 +18,11 @@ func NewEmpty() *Post {
 	return &Post{}
 }
 
-func New(title, creatorUsername, description string) *Post {
+func New(title, creatorUsername, description string, tags []string) *Post {
 	return &Post{
 		Title:           title,
 		Description:     description,
 		CreatorUsername: creatorUsername,
+		TagNames:        tags,
 	}
 }

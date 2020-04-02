@@ -2,6 +2,7 @@ package post
 
 import (
 	"checkaem_server/cmd/database"
+	"checkaem_server/cmd/entities/post"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -12,7 +13,9 @@ func TestInsertGetDelete(t *testing.T) {
 
 	tags := []string{"math", "podsyp"}
 
-	pInserted, err := Insert("This text is awesome!!!!", "kosterico", "Some doc", tags)
+	p := post.New("This text is awesome!!!!", "kosterico", "Some doc", tags)
+
+	pInserted, err := Insert(p)
 	assert.Nil(t, err)
 
 	pSelected, err := Get(pInserted.Id)
@@ -20,7 +23,7 @@ func TestInsertGetDelete(t *testing.T) {
 
 	assert.Equal(t, pInserted.Id, pSelected.Id)
 
-	_, err = Delete(pInserted.Id)
+	_, err = Delete(pInserted.Id, "kosterico")
 
 	assert.Nil(t, err)
 

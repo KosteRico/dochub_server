@@ -45,10 +45,17 @@ func main() {
 
 	authenticatedUserRouter.Handle("/refresh", auth.RefreshToken).Methods("GET")
 	authenticatedUserRouter.Handle("/test/{msg}", testHandler)
-	authenticatedUserRouter.Handle("/posts", post.GetCreatedPosts).Methods("GET", "POST")
+	authenticatedUserRouter.Handle("/posts", post.GetCreated).Methods("GET")
+	authenticatedUserRouter.Handle("/posts", post.Create).Methods("POST")
+
+	postsRouter := authenticatedUserRouter.PathPrefix("/posts/{id}").Subrouter()
+
+	postsRouter.Handle("", post.Delete).Methods("DELETE")
+	postsRouter.Handle("", post.Modify).Methods("PATCH")
 
 	subscriptionsRouter := authenticatedUserRouter.PathPrefix("/subscriptions").Subrouter()
 	subscriptionsRouter.Handle("/posts", subscriptions.GetSubscribedPosts).Methods("GET")
+	subscriptionsRouter.Handle("/tags", subscriptions.GetSubscribedTags).Methods("GET")
 
 	log.Println("Server started")
 	log.Fatal(http.ListenAndServe(":8080", r))

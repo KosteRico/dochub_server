@@ -1,7 +1,7 @@
 package tag
 
 const (
-	getQuery = "select name, counter from tag where name = $1"
+	getQuery = "select name, counter from tag where name = $1;"
 
 	getPostsQuery = `select p.id,
 						   title,

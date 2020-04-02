@@ -33,6 +33,11 @@ func RespondNotFound(w http.ResponseWriter, message string) {
 	RespondMessage(w, false, message)
 }
 
+func RespondNotAdmin(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusForbidden)
+	RespondMessage(w, false, "This user is not an author")
+}
+
 func RespondUserNotFound(w http.ResponseWriter, username string) {
 	RespondNotFound(w, fmt.Sprintf("User with name %q not found", username))
 }
