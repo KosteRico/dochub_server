@@ -3,7 +3,7 @@ package auth
 import (
 	"checkaem_server/cmd/database/user"
 	"checkaem_server/cmd/handlers/util"
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v4"
 )
 
 func login(username, password string) map[string]interface{} {

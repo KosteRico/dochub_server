@@ -1,17 +1,19 @@
 package post
 
-import "github.com/jackc/pgx/pgtype"
+import (
+	"time"
+)
 
 type Post struct {
-	Id              string             `json:"id"`
-	Title           string             `json:"title"`
-	Description     string             `json:"description"`
-	DateCreated     pgtype.Timestamptz `json:"date_created"`
-	DateUpdated     pgtype.Timestamptz `json:"date_updated"`
-	CreatorUsername string             `json:"creator_username"`
-	LikeCount       int                `json:"like_count"`
-	BookmarkCount   int                `json:"bookmark_count"`
-	TagNames        []string           `json:"tag_names"`
+	Id              string    `json:"id"`
+	Title           string    `json:"title"`
+	Description     string    `json:"description"`
+	DateCreated     time.Time `json:"date_created"`
+	DateUpdated     time.Time `json:"date_updated"`
+	CreatorUsername string    `json:"creator_username"`
+	IsBookmarked    bool      `json:"is_bookmarked"`
+	BookmarkCount   uint      `json:"bookmark_count"`
+	TagNames        []string  `json:"tag_names"`
 }
 
 func NewEmpty() *Post {

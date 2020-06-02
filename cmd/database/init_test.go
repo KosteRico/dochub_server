@@ -8,5 +8,5 @@ import (
 func TestInitDB(t *testing.T) {
 	assert.Nil(t, Init())
 
-	assert.Nil(t, Close())
+	Close()
 }

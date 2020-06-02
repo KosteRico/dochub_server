@@ -1,51 +1,58 @@
 package util
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	"errors"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"os"
-	"time"
+	"strconv"
+	"strings"
 )
 
 func Message(status bool, message string) map[string]interface{} {
 	return map[string]interface{}{"status": status, "message": message}
 }
 
-func GenerateTokenPair(username string) (map[string]string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	signedStrBytes := []byte(os.Getenv("token_password"))
+func GetUsername(r *http.Request) (string, error) {
+	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
 
-	c := token.Claims.(jwt.MapClaims)
-	c["name"] = username
-	c["exp"] = time.Now().Add(20 * time.Minute).Unix()
-
-	t, err := token.SignedString(signedStrBytes)
+	claims, err := ExtractClaims(token)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	username := fmt.Sprintf("%v", claims["name"])
 
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	return username, nil
+}
 
-	rtClaims["name"] = username
-	rtClaims["exp"] = time.Now().Add(24 * time.Hour).Unix()
+func GetFromQuery(r *http.Request, key string) (string, error) {
 
-	rt, err := refreshToken.SignedString(signedStrBytes)
+	queries := r.URL.Query()
 
-	if err != nil {
-		return nil, err
+	if statusStr, ok := queries[key]; ok {
+		if len(statusStr) > 0 {
+			return statusStr[0], nil
+		}
+
+		return "", errors.New(fmt.Sprintf("empty %q parameter", key))
 	}
 
-	return map[string]string{
-		"access_token":  t,
-		"refresh_token": rt,
-	}, nil
+	return "", errors.New(fmt.Sprintf("param %q doesn't exist", key))
 
 }
 
-func GetUsername(r *http.Request) string {
-	return mux.Vars(r)["username"]
+func GetId(r *http.Request) string {
+	return mux.Vars(r)["id"]
+}
+
+func GetStatusFromQuery(r *http.Request) (bool, error) {
+	res, err := GetFromQuery(r, "status")
+
+	if err != nil {
+		return false, err
+	}
+
+	return strconv.ParseBool(res)
 }

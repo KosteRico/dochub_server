@@ -20,5 +20,5 @@ func TestInsertDelete(t *testing.T) {
 	assert.NotNil(t, Insert(&u))
 
 	assert.Nil(t, Delete(username))
-	assert.Nil(t, database.Close())
+	database.Close()
 }

@@ -1,22 +1,15 @@
 package database
 
 import (
+	"context"
 	"fmt"
-	"github.com/jackc/pgx"
-	"github.com/joho/godotenv"
-	"log"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"os"
 )
 
-var Connection *pgx.Conn
+var Connection *pgxpool.Pool
 
 func Init() error {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Println("File \".env\" wasn't initialized")
-	}
-
 	username := os.Getenv("db_username")
 	password := os.Getenv("db_password")
 	host := os.Getenv("db_host")
@@ -25,13 +18,9 @@ func Init() error {
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
 
-	connConfig, err := pgx.ParseConnectionString(connStr)
+	var err error
 
-	if err != nil {
-		return err
-	}
-
-	Connection, err = pgx.Connect(connConfig)
+	Connection, err = pgxpool.Connect(context.Background(), connStr)
 
 	if err != nil {
 		return err
@@ -40,6 +29,6 @@ func Init() error {
 	return nil
 }
 
-func Close() error {
-	return Connection.Close()
+func Close() {
+	Connection.Close()
 }

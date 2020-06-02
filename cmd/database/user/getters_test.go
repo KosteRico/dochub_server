@@ -53,12 +53,12 @@ func TestGetAllUsername(t *testing.T) {
 
 	require.Nil(t, database.Init())
 
-	selectedBefore, err := GetAllUsernames()
+	selectedBefore, err := GetAllNames()
 	assert.Nil(t, err)
 
 	assert.Nil(t, createTestUsers())
 
-	selectedAfter, err := GetAllUsernames()
+	selectedAfter, err := GetAllNames()
 
 	assert.Nil(t, err)
 

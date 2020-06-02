@@ -10,14 +10,16 @@ import (
 func TestGet(t *testing.T) {
 	assert.Nil(t, database.Init())
 
-	res, err := Get("math")
+	username := "josh"
+
+	res, err := Get(username, "math")
 	assert.Nil(t, err)
 
 	fmt.Printf("%s %d", res.Name, res.Count)
-
+	``
 	for _, i := range res.Posts {
 		fmt.Printf("\n%v\n", *i)
 	}
 
-	assert.Nil(t, database.Close())
+	database.Close()
 }

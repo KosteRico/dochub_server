@@ -18,7 +18,7 @@ func TestInsertGetDelete(t *testing.T) {
 	pInserted, err := Insert(p)
 	assert.Nil(t, err)
 
-	pSelected, err := Get(pInserted.Id)
+	pSelected, err := Get(p.CreatorUsername, pInserted.Id)
 	assert.Nil(t, err)
 
 	assert.Equal(t, pInserted.Id, pSelected.Id)
@@ -27,8 +27,8 @@ func TestInsertGetDelete(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	_, err = Get(pInserted.Id)
+	_, err = Get(p.CreatorUsername, pInserted.Id)
 	assert.NotNil(t, err)
 
-	assert.Nil(t, database.Close())
+	database.Close()
 }

@@ -1,15 +1,15 @@
 package middleware
 
 import (
+	"checkaem_server/cmd/handlers/util"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
-	"os"
 )
 
 var jwtMid = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("token_password")), nil
+		return util.GetSignedStrBytes(), nil
 	},
 })
 

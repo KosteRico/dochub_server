@@ -16,16 +16,20 @@ func RespondMessage(w http.ResponseWriter, status bool, message string) {
 }
 
 //Concrete responds with status codes
-//
+
+func RespondInvalidTokenPayload(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusForbidden)
+	RespondMessage(w, false, "Cannot extract payload from jwt token")
+}
 
 func RespondInvalidRequest(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
 	RespondMessage(w, false, "Invalid request")
 }
 
-func RespondInternalServerError(w http.ResponseWriter, message string) {
+func RespondInternalServerError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	RespondMessage(w, false, message)
+	RespondMessage(w, false, err.Error())
 }
 
 func RespondNotFound(w http.ResponseWriter, message string) {

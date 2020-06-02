@@ -8,3 +8,12 @@
 out
 gen
 *.env
+*.sql
+
+# formats of test document files
+*.pdf
+*.pptx
+*.doc
+*.docx
+*.txt
+/cmd/searchEngine/indexing/files/

@@ -17,7 +17,7 @@ func TestGetTags(t *testing.T) {
 
 	fmt.Printf("\n%v\n", tags)
 
-	require.Nil(t, database.Close())
+	database.Close()
 }
 
 func TestGetByCreator(t *testing.T) {
@@ -33,5 +33,5 @@ func TestGetByCreator(t *testing.T) {
 		assert.Equal(t, username, i.CreatorUsername)
 	}
 
-	require.Nil(t, database.Close())
+	database.Close()
 }

@@ -1,13 +1,16 @@
 package subscription
 
 const (
+	incrementCounterQuery = "update tag set subscribers_counter = subscribers_counter + 1 where name = $1;"
+	decrementCounterQuery = "update tag set subscribers_counter = subscribers_counter - 1 where name = $1;"
+
+	getQuery      = "select username from subscription where username = $1 and tag_name = $2;"
 	getPostsQuery = `select p.id,
 						   title,
 						   description,
 						   p.date_created,
 						   date_updated,
 						   creator_username,
-						   like_count,
 						   bookmark_count
 					from subscription
 							 join tag t on subscription.tag_name = t.name
@@ -19,6 +22,8 @@ const (
 						from subscription
 								 join tag t on subscription.tag_name = t.name
 						where username = $1;`
+
 	insertQuery = "insert into subscription(username, tag_name) values ($1, $2);"
-	deleteQuery = "delete from subscription where username = $1 and tag_name = $2;"
+
+	deleteQuery = "delete from subscription where username = $1 and tag_name = $2 returning username;"
 )
